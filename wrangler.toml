@@ -1,3 +1,6 @@
 name = "teia-proxy"
 main = "src/index.js"
 compatibility_date = "2022-08-28"
+
+[vars]
+TEIA_HOSTNAME = "teia.art"

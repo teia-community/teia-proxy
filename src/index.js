@@ -37,7 +37,7 @@ function injectOpenGraphTags(body, token) {
   const title = clean(token.title);
   const description = clean(token.description);
   const image = clean(token.display_uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'));
-  const url = `https://teia.art/objkt/${token.id}`;
+  const url = `https://${TEIA_HOSTNAME}/objkt/${token.id}`;
 
   const openGraphTags = `
         <meta property="og:type" content="website" />
@@ -63,7 +63,7 @@ addEventListener('fetch', (event) => {
 async function handleRequest(request) {
   const url = new URL(request.url);
 
-  url.hostname = 'teia.art';
+  url.hostname = TEIA_HOSTNAME;
 
   try {
     const detailPageMatch = url.pathname.match(/\/objkt\/([0-9]+)/);
