@@ -1,5 +1,5 @@
 async function getTokenDetails(tokenId) {
-  const response = await fetch('https://api-v5.teia.rocks/v1/graphql', {
+  const response = await fetch(HICDEX_API, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -27,7 +27,7 @@ function clean(str) {
   return str.replace('"', '');
 }
 
-function injectOpenGraphTags(body, token) {
+function injectOpenGraphTags(body, token, originalUrl) {
   let newBody = body;
 
   // remove existing og tags
@@ -37,21 +37,21 @@ function injectOpenGraphTags(body, token) {
   const title = clean(token.title);
   const description = clean(token.description);
   const image = clean(token.display_uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'));
-  const url = `https://${TEIA_HOSTNAME}/objkt/${token.id}`;
+  const url = `${originalUrl.protocol}//${originalUrl.hostname}/objkt/${token.id}`;
 
   const openGraphTags = `
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="${title}" />
-        <meta property="og:description" content="${description}" />
-        <meta property="og:image" content="${image}" />
-        <meta property="og:url" content="${url}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
+    <meta property="og:image" content="${image}" />
+    <meta property="og:url" content="${url}" />
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:creator" content="@TeiaCommunity" />
-        <meta name="twitter:title" content="${title}" />
-        <meta name="twitter:description" content="${description}" />
-        <meta name="twitter:image" content="${image}" />
-    `;
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@TeiaCommunity" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
+    <meta name="twitter:image" content="${image}" />
+  `;
 
   return newBody.replace('<head>', `<head>${openGraphTags}`);
 }
@@ -63,7 +63,7 @@ addEventListener('fetch', (event) => {
 async function handleRequest(request) {
   const url = new URL(request.url);
 
-  url.hostname = TEIA_HOSTNAME;
+  url.hostname = TARGET_HOSTNAME;
 
   try {
     const detailPageMatch = url.pathname.match(/\/objkt\/([0-9]+)/);
@@ -81,7 +81,7 @@ async function handleRequest(request) {
 
       const body = await response.text();
 
-      return new Response(injectOpenGraphTags(body, token), response);
+      return new Response(injectOpenGraphTags(body, token, new URL(request.url)), response);
     }
   } catch (err) {
     console.log('failed to process token metadata', err);
