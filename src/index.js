@@ -24,7 +24,7 @@ async function getTokenDetails(tokenId) {
 }
 
 function clean(str) {
-  return str.replace('"', '');
+  return str.replaceAll('"', '');
 }
 
 function injectOpenGraphTags(body, token, originalUrl) {
