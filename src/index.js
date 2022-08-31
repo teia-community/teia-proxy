@@ -36,7 +36,7 @@ function injectOpenGraphTags(body, token, originalUrl) {
 
   const title = clean(token.title);
   const description = clean(token.description);
-  const image = clean(token.display_uri.replace('ipfs://', 'https://nftstorage.link/ipfs/'));
+  const image = clean(token.display_uri.replace('ipfs://', IPFS_GATEWAY));
   const url = `${originalUrl.protocol}//${originalUrl.hostname}/objkt/${token.id}`;
 
   const openGraphTags = `
